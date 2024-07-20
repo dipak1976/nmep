@@ -254,7 +254,6 @@ labl_id = Label(frame_ent,text="ID NO.",bg=bg_color,fg=fg_color,font=font_family
 labl_id.grid(row=2,column=1,padx=10,pady=5,sticky=W)
 ent_id = Entry(frame_ent,width=15,textvariable=id_num,font="calibri,16,bold",state="readonly")
 ent_id.grid(row=2,column=2)
-
 #id = 0
 
 #second row - receave date
