@@ -104,9 +104,141 @@ def pick_falya(e):
 		ent_falya.current(0)
 	if ent_village.get() == "Vangarava":		
 		ent_falya.config(value=van_flya)
-		ent_falya.current(0)	
+		ent_falya.current(0)
+
+# close the app
+def close():
+	win.destroy() 
+	
+#creating mysql conn for fetching last id
+conn = mysql.connector.connect(host="localhost",user = "root",password = "Dip@k1976",database="nmep")
+if conn.is_connected():
+    print("connected..1")
+cur = conn.cursor()	
+cur.execute("select max(id_no) from m1form")
+global id
+id = cur.fetchone()
+print(id)
+for i in id:
+	id = i
+id = id + 1
+id_num.set(id)
+conn.close()
+
+#checking if all fields are filled
+def all_fill():
+	if rcv_date.get()!="" and agency.get()!="" and agency_code.get()!="" and village.get()!="" and falya.get()!="" and coll_date.get()!="" and exam_date.get()!= "" :
+		if bs_test.get() > 0 or rdt_test.get() > 0:
+			return True
+		else:
+			messagebox.showerror("Error","Bs and RDT both should not be zero")
+			return False
+	else:
+		messagebox.showerror("Error","All fields are mandatory")
+		return False		
+#submitting filled data to database
+def submit():
+	if all_fill():
+		#print("ok")
+		conn = mysql.connector.connect(host="localhost",user = "root",password = "Dip@k1976",database="nmep")
+		if conn.is_connected():
+			print("connected..2")
+
+		cur = conn.cursor()	
+		cur.execute("insert into m1form values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",(
+																							id_num.get(),
+																							rcv_date.get(),
+																							agency.get(),
+																							agency_code.get(),
+																							village.get(),
+																							falya.get(),
+																							coll_date.get(),
+																							exam_date.get(),
+																							rdt_test.get(),
+																							rdt_pv.get(),
+																							rdt_pf.get(),
+																							bs_test.get(),
+																							bs_pv.get(),
+																							bs_pf.get()
+																							))
+		conn.commit()
+		conn.close()
+		messagebox.showinfo("submit","new data added to m1form.")
+		global id
+		id = id + 1
+		id_num.set(id)
+		rcv_date.set(datetime.today().strftime('%Y-%m-%d')),
+		agency.set(""),
+		agency_code.set(""),
+		village.set(""),
+		falya.set(""),
+		coll_date.set(datetime.today().strftime('%Y-%m-%d')),
+		exam_date.set(datetime.today().strftime('%Y-%m-%d')),
+		rdt_test.set("0"),
+		rdt_pv.set("0"),
+		rdt_pf.set("0"),
+		bs_test.set("0"),
+		bs_pv.set("0"),
+		bs_pf.set("0")
+	# else:
+	# 	messagebox.showerror("Error","data not submited due to error")
+
+# Generate MF8 Report
+# def gen_mf8_submit():
+# 	if fram_mf8 :
+# 		fram_mf8.destroy()
+# to creat MF8 generating box
+# def gen_mf8():
+# 	global fram_mf8
+# 	fram_mf8 = ttk.Labelframe(win,text="Generate MF8",width=500,height=50)
+# 	fram_mf8.grid(row=17,column=1,columnspan=2)
+
+# 	#combobox for agency selection
+# 	labl_agency = Label(fram_mf8,text="AGENCY TYPE",bg=bg_color,fg=fg_color,font="calibri,16,bold")
+# 	labl_agency.grid(row=0,column=1,padx=10,pady=5,sticky=W)
+# 	ent_agency = ttk.Combobox(fram_mf8,width= 15,textvariable=mf8_agency,state="readonly",values=("ACTIVE","FHW","ASHA","CLINIC","CHO","OTHER"),font="calibri,16,bold")
+# 	ent_agency.grid(row=0,column=2)
+# 	ent_agency.bind("<<ComboboxSelected>>", pick_code)
+
+# 	#combobox for agency code selection
+# 	labl_agency_code = Label(fram_mf8,text="AGENCY CODE",bg=bg_color,fg=fg_color,font="calibri,16,bold")
+# 	labl_agency_code.grid(row=1,column=1,padx=10,pady=5,sticky=W)
+# 	ent_agency_code = ttk.Combobox(fram_mf8,width=15,textvariable=mf8_agency_code,font="calibri,16,bold",state="readonly")
+# 	ent_agency_code.grid(row=1,column=2)
+
+# 	#MF8- from date
+# 	labl_rcv_date = Label(fram_mf8,text="FROM DATE",bg=bg_color,fg=fg_color,font="calibri,12,bold")
+# 	labl_rcv_date.grid(row=0,column=3,padx=10,pady=5,sticky=W)
+# 	ent_rcv_date = DateEntry(fram_mf8,textvariable = mf8_from_date,date_pattern="yyyy-mm-dd",state="readonly")
+# 	ent_rcv_date.grid(row=0,column=4)
+
+# 	#MF8- to date
+# 	labl_rcv_date = Label(fram_mf8,text="TO DATE",bg=bg_color,fg=fg_color,font="calibri,12,bold")
+# 	labl_rcv_date.grid(row=1,column=3,padx=10,pady=5,sticky=W)
+# 	ent_rcv_date = DateEntry(fram_mf8,textvariable = mf8_to_date,date_pattern="yyyy-mm-dd",state="readonly")
+# 	ent_rcv_date.grid(row=1,column=4)
+
+# 	#button for data submit
+# 	btn1_submit = Button(fram_mf8,text="submit",command=gen_mf8_submit)
+# 	btn1_submit.grid(row=3,column=1)
 
 
+
+
+
+# #button for data submit
+# btn1_submit = Button(win,text="submit",command=submit)
+# btn1_submit.grid(row=16,column=1)
+
+# #button for MF8
+# btn2_mf8 = Button(win,text="generate MF8")#,command=gen_mf8
+# btn2_mf8.grid(row=16,column=2)
+
+
+
+
+
+#===========================================================================	       	
 #main heading
 labl_1 = Label(win,text="NMEP REPORTING SYSTEM     PHC RINCHHVANI",bg= "red",bd=10,relief=RIDGE,fg=fg_color,font=font_family_heading)
 labl_1.pack(side=TOP,fill=X)
@@ -123,7 +255,7 @@ labl_id.grid(row=2,column=1,padx=10,pady=5,sticky=W)
 ent_id = Entry(frame_ent,width=15,textvariable=id_num,font="calibri,16,bold",state="readonly")
 ent_id.grid(row=2,column=2)
 
-id = 0
+#id = 0
 
 #second row - receave date
 labl_rcv_date = Label(frame_ent,text="RECEAVE DATE",bg=bg_color,fg=fg_color,font="calibri,16,bold")
@@ -207,16 +339,17 @@ ent_bs_pf = Spinbox(frame_ent,width=15,textvariable=bs_pf,font="calibri,16,bold"
 ent_bs_pf.grid(row=15,column=2)
 
 #button for data submit
-btn1_submit = Button(frame_ent,text="submit",height=1,width=15,font="calibri,16,bold" )#,command=submit
+btn1_submit = Button(frame_ent,text="SUBMIT",bg="red",height=1,width=15,font="calibri,16,bold",command=submit )#
 btn1_submit.grid(row=16,column=1,columnspan=2)
-
-
-
+if rcv_date.get()!="" and agency.get()!="" and agency_code.get()!="" and village.get()!="" and falya.get()!="" and coll_date.get()!="" and exam_date.get()!= "" :
+		if bs_test.get() > 0 or rdt_test.get() > 0:
+			print("ok green")
+			btn1_submit[bg_color] = "green"
 
 #frame 2 for list box
 frame_2 = Frame(win,bd=10,relief=RIDGE)
 frame_2.place(x=340,y=50,width=760,height=550)
-
+#pending............................................................................
 
 
 
@@ -252,7 +385,7 @@ btn_delete = Button(frame_3,text="DELETE",height=1,width=15,font="calibri,16,bol
 btn_delete.grid(row=0,column=6,padx=2,pady=2)
 
 #button for close
-btn_close = Button(frame_3,text="CLOSE",height=1,width=15,font="calibri,16,bold")#,command=gen_mf8
+btn_close = Button(frame_3,text="CLOSE",height=1,width=15,font="calibri,16,bold",command = close)#,command=gen_mf8
 btn_close.grid(row=0,column=7,padx=2,pady=2)
 
 
