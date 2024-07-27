@@ -105,7 +105,14 @@ def pick_falya(e):
 	if ent_village.get() == "Vangarava":		
 		ent_falya.config(value=van_flya)
 		ent_falya.current(0)
-
+		
+# change color of submit button when all data filled
+def check_fill(event):
+	if rcv_date.get()!="" and agency.get()!="" and agency_code.get()!="" and village.get()!="" and falya.get()!="" and coll_date.get()!="" and exam_date.get()!= "" :
+		if bs_test.get() > 0 or rdt_test.get() > 0:
+			print("ok green")
+			btn1_submit.config(bg = "green")	# not working............................	
+	    	        
 # close the app
 def close():
 	win.destroy() 
@@ -248,6 +255,10 @@ frame_1.place(x=0,y=50,width=340,height=550)
 frame_ent = LabelFrame(frame_1,text="M-1 Form Data Entry",background="white")
 frame_ent.place(x=5,y=5)
 
+for widget in frame_1.winfo_children():
+    widget.bind("<FocusOut>",check_fill)
+    widget.grid_configure(padx=10,pady= 10) # not working..........................
+
 # dataentry start
 #first row - id
 labl_id = Label(frame_ent,text="ID NO.",bg=bg_color,fg=fg_color,font=font_family_regular)
@@ -340,10 +351,7 @@ ent_bs_pf.grid(row=15,column=2)
 #button for data submit
 btn1_submit = Button(frame_ent,text="SUBMIT",bg="red",height=1,width=15,font="calibri,16,bold",command=submit )#
 btn1_submit.grid(row=16,column=1,columnspan=2)
-if rcv_date.get()!="" and agency.get()!="" and agency_code.get()!="" and village.get()!="" and falya.get()!="" and coll_date.get()!="" and exam_date.get()!= "" :
-		if bs_test.get() > 0 or rdt_test.get() > 0:
-			print("ok green")
-			btn1_submit[bg_color] = "green"
+
 
 #frame 2 for list box
 frame_2 = Frame(win,bd=10,relief=RIDGE)
